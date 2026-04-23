@@ -1,4 +1,4 @@
-import { TaskListPage } from "@/components/tasks/task-list-page";
+import { EnhancedProfileList } from "@/components/profile/enhanced-profile-list";
 import { buildTaskMetadata } from "@/lib/seo";
 import { taskPageMetadata } from "@/config/site.content";
 
@@ -12,5 +12,5 @@ export const generateMetadata = () =>
   });
 
 export default function ProfilePage({ searchParams }: { searchParams?: { category?: string } }) {
-  return <TaskListPage task="profile" category={searchParams?.category} />;
+  return <EnhancedProfileList category={searchParams?.category} />;
 }
