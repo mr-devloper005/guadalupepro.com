@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Plus, Save } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Plus, Save, Sparkles } from "lucide-react";
 import { NavbarShell } from "@/components/shared/navbar-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,8 +94,9 @@ const FORM_CONFIG: Record<TaskKey, { title: string; description: string; fields:
     ],
   },
   profile: {
-    title: "Create Profile",
-    description: "Create a local-only business profile.",
+    title: "Create your profile",
+    description:
+      "Add your public identity: brand name, story, logo, and website. Preview is saved locally in your browser.",
     fields: [
       { key: "brandName", label: "Brand name", type: "text", required: true },
       { key: "summary", label: "Short summary", type: "textarea", required: true },
@@ -182,17 +183,32 @@ export default function CreateTaskPage() {
 
   if (!taskConfig || !formConfig) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-slate-50 text-slate-900">
         <NavbarShell />
-        <main className="mx-auto max-w-3xl px-4 py-16 text-center">
-          <h1 className="text-2xl font-semibold text-foreground">Task not available</h1>
-          <p className="mt-2 text-muted-foreground">
-            This task is not enabled for the current site.
-          </p>
-          <Button className="mt-6" asChild>
-            <Link href="/">Back home</Link>
-          </Button>
-        </main>
+        <section className="relative overflow-hidden bg-[#1b2b6b] py-20 text-white">
+          <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_30%_20%,#f5b014_0,transparent_40%)]" />
+          <div className="relative mx-auto max-w-lg px-4 text-center">
+            <Sparkles className="mx-auto h-10 w-10 text-[#f5b014]" />
+            <h1 className="mt-6 text-3xl font-bold tracking-tight">This type isn&apos;t available</h1>
+            <p className="mt-4 text-sm leading-7 text-white/75">
+              This content type is not enabled on {SITE_CONFIG.name}. Head home or open an allowed section.
+            </p>
+            <Button className="mt-8 rounded-full bg-[#f5b014] px-8 font-bold text-[#1b2b6b] hover:bg-[#e0a00f]" asChild>
+              <Link href="/">Back to home</Link>
+            </Button>
+          </div>
+        </section>
+        <footer className="border-t border-slate-200 bg-[#1b2b6b] py-10 text-center text-sm text-white/70">
+          <p className="font-semibold text-white">{SITE_CONFIG.name}</p>
+          <div className="mt-3 flex flex-wrap justify-center gap-4">
+            <Link href="/" className="text-[#f5b014] hover:underline">
+              Home
+            </Link>
+            <Link href="/profile" className="text-white/80 hover:text-[#f5b014]">
+              Browse profiles
+            </Link>
+          </div>
+        </footer>
       </div>
     );
   }
@@ -270,125 +286,194 @@ export default function CreateTaskPage() {
     router.push(`/local/${taskKey}/${post.slug}`);
   };
 
+  const tips = [
+    "Required fields are marked with a red asterisk (*).",
+    "Saves as a local preview in this browser only — sign in if prompted.",
+    `After saving, you’ll open your draft on the local ${taskConfig.label} view.`,
+  ];
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <NavbarShell />
-      <main className="mx-auto max-w-4xl px-4 py-12">
-        <div className="mb-8 flex items-center gap-3">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">{formConfig.title}</h1>
-            <p className="text-sm text-muted-foreground">{formConfig.description}</p>
+
+      <section className="relative overflow-hidden bg-[#1b2b6b] text-white">
+        <div className="absolute inset-0 opacity-25 [background-image:radial-gradient(circle_at_18%_22%,#f5b014_0,transparent_38%),radial-gradient(circle_at_82%_60%,#ffffff_0,transparent_32%)]" />
+        <div className="relative mx-auto max-w-5xl px-4 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-24">
+          <Link
+            href={taskConfig.route || "/"}
+            className="inline-flex items-center gap-2 text-sm font-semibold text-white/85 transition hover:text-[#f5b014]"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to {taskConfig.label}
+          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-2">
+            <Badge className="border-0 bg-white/15 text-white hover:bg-white/20">{taskConfig.label}</Badge>
+            <Badge variant="outline" className="border-white/35 bg-transparent text-white/90">
+              Local preview
+            </Badge>
           </div>
+          <h1 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">{formConfig.title}</h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-white/75">{formConfig.description}</p>
         </div>
+      </section>
 
-        <div className="rounded-3xl border border-border bg-card p-8 shadow-sm">
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary">{taskConfig.label}</Badge>
-            <Badge variant="outline">Local-only</Badge>
-          </div>
+      <main className="relative z-10 mx-auto max-w-5xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="-mt-14 grid gap-8 lg:grid-cols-[1fr_280px] lg:items-start">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_24px_80px_rgba(27,43,107,0.12)] sm:p-10">
+            <div className="h-1 w-14 rounded-full bg-[#f5b014]" />
+            <h2 className="mt-5 text-lg font-bold text-[#1b2b6b]">Fill in the form</h2>
+            <p className="mt-1 text-sm text-slate-500">Use clear titles and short summaries so your card looks great in the grid.</p>
 
-          <div className="mt-6 grid gap-6">
-            {formConfig.fields.map((field) => (
-              <div key={field.key} className="grid gap-2">
-                <Label>
-                  {field.label} {field.required ? <span className="text-red-500">*</span> : null}
-                </Label>
-                {field.type === "textarea" ? (
-                  <Textarea
-                    rows={4}
-                    placeholder={field.placeholder}
-                    value={values[field.key] || ""}
-                    onChange={(event) => updateValue(field.key, event.target.value)}
-                    className="border-2 border-slate-200 bg-white focus-visible:ring-2 focus-visible:ring-primary/30"
-                  />
-                ) : field.type === "category" ? (
-                  <select
-                    value={values[field.key] || ""}
-                    onChange={(event) => updateValue(field.key, event.target.value)}
-                    className="h-11 rounded-lg border-2 border-slate-200 bg-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                  >
-                    <option value="">Select category</option>
-                    {CATEGORY_OPTIONS.map((option) => (
-                      <option key={option.slug} value={option.slug}>
-                        {option.name}
-                      </option>
-                    ))}
-                  </select>
-                ) : field.type === "file" ? (
-                  <div className="grid gap-3">
-                    <Input
-                      type="file"
-                      accept="application/pdf"
-                      onChange={(event) => {
-                        const file = event.target.files?.[0];
-                        if (!file) return;
-                        if (file.type !== "application/pdf") {
-                          toast({
-                            title: "Invalid file",
-                            description: "Please upload a PDF file.",
-                          });
-                          return;
-                        }
-                        const reader = new FileReader();
-                        setUploadingPdf(true);
-                        reader.onload = () => {
-                          const result = typeof reader.result === "string" ? reader.result : "";
-                          updateValue(field.key, result);
-                          setUploadingPdf(false);
-                          toast({
-                            title: "PDF uploaded",
-                            description: "File is stored locally.",
-                          });
-                        };
-                        reader.readAsDataURL(file);
-                      }}
-                    />
-                    <Input
-                      type="text"
-                      placeholder="Or paste a PDF URL"
+            <div className="mt-8 grid gap-6">
+              {formConfig.fields.map((field) => (
+                <div key={field.key} className="grid gap-2">
+                  <Label className="text-sm font-semibold text-slate-800">
+                    {field.label} {field.required ? <span className="text-red-500">*</span> : null}
+                  </Label>
+                  {field.type === "textarea" ? (
+                    <Textarea
+                      rows={4}
+                      placeholder={field.placeholder}
                       value={values[field.key] || ""}
                       onChange={(event) => updateValue(field.key, event.target.value)}
+                      className="rounded-xl border-2 border-slate-200 bg-slate-50/50 text-slate-900 focus-visible:border-[#1b2b6b] focus-visible:ring-2 focus-visible:ring-[#1b2b6b]/20"
                     />
-                    {uploadingPdf ? (
-                      <p className="text-xs text-muted-foreground">Uploading PDF…</p>
-                    ) : null}
-                  </div>
-                ) : (
-                  <Input
-                    type={field.type === "number" ? "number" : "text"}
-                    placeholder={
-                      field.type === "images" || field.type === "tags" || field.type === "highlights"
-                        ? "Separate values with commas"
-                        : field.placeholder
-                    }
-                    value={values[field.key] || ""}
-                    onChange={(event) => updateValue(field.key, event.target.value)}
-                    className="h-11 border-2 border-slate-200 bg-white focus-visible:ring-2 focus-visible:ring-primary/30"
-                  />
-                )}
-              </div>
-            ))}
+                  ) : field.type === "category" ? (
+                    <select
+                      value={values[field.key] || ""}
+                      onChange={(event) => updateValue(field.key, event.target.value)}
+                      className="h-11 rounded-xl border-2 border-slate-200 bg-white px-3 text-sm text-slate-900 focus-visible:outline-none focus-visible:border-[#1b2b6b] focus-visible:ring-2 focus-visible:ring-[#1b2b6b]/20"
+                    >
+                      <option value="">Select category</option>
+                      {CATEGORY_OPTIONS.map((option) => (
+                        <option key={option.slug} value={option.slug}>
+                          {option.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : field.type === "file" ? (
+                    <div className="grid gap-3">
+                      <Input
+                        type="file"
+                        accept="application/pdf"
+                        className="cursor-pointer rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/80 file:mr-4 file:rounded-lg file:border-0 file:bg-[#1b2b6b] file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:border-[#1b2b6b]"
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          if (!file) return;
+                          if (file.type !== "application/pdf") {
+                            toast({
+                              title: "Invalid file",
+                              description: "Please upload a PDF file.",
+                            });
+                            return;
+                          }
+                          const reader = new FileReader();
+                          setUploadingPdf(true);
+                          reader.onload = () => {
+                            const result = typeof reader.result === "string" ? reader.result : "";
+                            updateValue(field.key, result);
+                            setUploadingPdf(false);
+                            toast({
+                              title: "PDF uploaded",
+                              description: "File is stored locally.",
+                            });
+                          };
+                          reader.readAsDataURL(file);
+                        }}
+                      />
+                      <Input
+                        type="text"
+                        placeholder="Or paste a PDF URL"
+                        value={values[field.key] || ""}
+                        onChange={(event) => updateValue(field.key, event.target.value)}
+                        className="h-11 rounded-xl border-2 border-slate-200 bg-white focus-visible:border-[#1b2b6b] focus-visible:ring-2 focus-visible:ring-[#1b2b6b]/20"
+                      />
+                      {uploadingPdf ? (
+                        <p className="text-xs text-slate-500">Uploading PDF…</p>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Input
+                      type={field.type === "number" ? "number" : "text"}
+                      placeholder={
+                        field.type === "images" || field.type === "tags" || field.type === "highlights"
+                          ? "Separate values with commas"
+                          : field.placeholder
+                      }
+                      value={values[field.key] || ""}
+                      onChange={(event) => updateValue(field.key, event.target.value)}
+                      className="h-11 rounded-xl border-2 border-slate-200 bg-white focus-visible:border-[#1b2b6b] focus-visible:ring-2 focus-visible:ring-[#1b2b6b]/20"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-3 border-t border-slate-100 pt-8">
+              <Button
+                onClick={handleSubmit}
+                className="rounded-full bg-[#f5b014] px-8 font-bold text-[#1b2b6b] shadow-md hover:bg-[#e0a00f]"
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save locally
+              </Button>
+              <Button variant="outline" asChild className="rounded-full border-2 border-slate-200 bg-white font-semibold text-[#1b2b6b] hover:border-[#1b2b6b] hover:bg-slate-50">
+                <Link href={taskConfig.route}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  View {taskConfig.label}
+                </Link>
+              </Button>
+            </div>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button onClick={handleSubmit}>
-              <Save className="mr-2 h-4 w-4" />
-              Save locally
-            </Button>
-            <Button variant="ghost" asChild>
-              <Link href={taskConfig.route}>
-                View {taskConfig.label}
-                <Plus className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+          <aside className="space-y-4 lg:sticky lg:top-24">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#1b2b6b]">Quick tips</p>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+                {tips.map((tip) => (
+                  <li key={tip} className="flex gap-2">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-[#f5b014]" />
+                    <span>{tip}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-2xl border border-[#1b2b6b]/15 bg-[#1b2b6b] p-6 text-white">
+              <Sparkles className="h-6 w-6 text-[#f5b014]" />
+              <p className="mt-3 text-sm font-semibold leading-6 text-white/90">
+                Need an account? Sign in first — then your name appears as the author on this preview.
+              </p>
+              <Button
+                variant="secondary"
+                className="mt-4 w-full rounded-full border-0 bg-[#f5b014] font-bold text-[#1b2b6b] hover:bg-[#e0a00f]"
+                asChild
+              >
+                <Link href="/login">Sign in</Link>
+              </Button>
+            </div>
+          </aside>
         </div>
       </main>
+
+      <footer className="border-t border-slate-200 bg-[#1b2b6b] py-12 text-white">
+        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 text-center sm:flex-row sm:text-left sm:px-6 lg:px-8">
+          <div>
+            <p className="text-sm font-bold">{SITE_CONFIG.name}</p>
+            <p className="mt-1 text-xs text-white/60">Local preview — drafts stay in this browser until you publish.</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 text-sm">
+            <Link href="/" className="font-semibold text-[#f5b014] hover:underline">
+              Home
+            </Link>
+            <Link href={taskConfig.route} className="text-white/80 hover:text-[#f5b014]">
+              View {taskConfig.label}
+            </Link>
+            <Link href="/contact" className="text-white/80 hover:text-[#f5b014]">
+              Contact
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
