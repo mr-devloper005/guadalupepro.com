@@ -1,113 +1,184 @@
-import { Building2, FileText, Image as ImageIcon, Mail, MapPin, Phone, Sparkles, Bookmark } from 'lucide-react'
+import Link from 'next/link'
+import { Clock, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react'
 import { NavbarShell } from '@/components/shared/navbar-shell'
 import { Footer } from '@/components/shared/footer'
 import { SITE_CONFIG } from '@/lib/site-config'
-import { getFactoryState } from '@/design/factory/get-factory-state'
-import { getProductKind } from '@/design/factory/get-product-kind'
-import { CONTACT_PAGE_OVERRIDE_ENABLED, ContactPageOverride } from '@/overrides/contact-page'
+import { buildPageMetadata } from '@/lib/seo'
 
-function getTone(kind: ReturnType<typeof getProductKind>) {
-  if (kind === 'directory') {
-    return {
-      shell: 'bg-[#f8fbff] text-slate-950',
-      panel: 'border border-slate-200 bg-white',
-      soft: 'border border-slate-200 bg-slate-50',
-      muted: 'text-slate-600',
-      action: 'bg-slate-950 text-white hover:bg-slate-800',
-    }
-  }
-  if (kind === 'editorial') {
-    return {
-      shell: 'bg-[#fbf6ee] text-[#241711]',
-      panel: 'border border-[#dcc8b7] bg-[#fffdfa]',
-      soft: 'border border-[#e6d6c8] bg-[#fff4e8]',
-      muted: 'text-[#6e5547]',
-      action: 'bg-[#241711] text-[#fff1e2] hover:bg-[#3a241b]',
-    }
-  }
-  if (kind === 'visual') {
-    return {
-      shell: 'bg-[#07101f] text-white',
-      panel: 'border border-white/10 bg-white/6',
-      soft: 'border border-white/10 bg-white/5',
-      muted: 'text-slate-300',
-      action: 'bg-[#8df0c8] text-[#07111f] hover:bg-[#77dfb8]',
-    }
-  }
-  return {
-    shell: 'bg-[#f7f1ea] text-[#261811]',
-    panel: 'border border-[#ddcdbd] bg-[#fffaf4]',
-    soft: 'border border-[#e8dbce] bg-[#f3e8db]',
-    muted: 'text-[#71574a]',
-    action: 'bg-[#5b2b3b] text-[#fff0f5] hover:bg-[#74364b]',
-  }
-}
+export const revalidate = 300
+
+export const generateMetadata = () =>
+  buildPageMetadata({
+    path: '/contact',
+    title: `Contact ${SITE_CONFIG.name}`,
+    description: `Get in touch with the ${SITE_CONFIG.name} team. We respond within 30 minutes during business hours.`,
+  })
+
+const channels = [
+  { icon: Phone, label: 'Call Us', value: '(234) 345-4574', sub: 'Mon–Sat · 9am – 10pm' },
+  { icon: Mail, label: 'Email', value: `hello@${SITE_CONFIG.baseUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}`, sub: 'We reply within 30 minutes' },
+  { icon: MessageCircle, label: 'Live Chat', value: 'Start a conversation', sub: 'Available 24/7 for members' },
+  { icon: MapPin, label: 'Office', value: '2200 Guadalupe St, Austin', sub: 'Texas, 78705, USA' },
+]
+
+const faqs = [
+  { q: 'How long does it take to hear back?', a: 'We respond to most messages within 30 minutes during business hours and by the next morning otherwise.' },
+  { q: 'Do you offer phone support?', a: 'Yes. Our support line is open Monday through Saturday, 9 AM – 10 PM local time.' },
+  { q: 'Can I request a profile review?', a: 'Absolutely. Select "Profile Review" in the subject and we will schedule a 15-minute walk-through for free.' },
+]
 
 export default function ContactPage() {
-  if (CONTACT_PAGE_OVERRIDE_ENABLED) {
-    return <ContactPageOverride />
-  }
-
-  const { recipe } = getFactoryState()
-  const productKind = getProductKind(recipe)
-  const tone = getTone(productKind)
-  const lanes =
-    productKind === 'directory'
-      ? [
-          { icon: Building2, title: 'Business onboarding', body: 'Add listings, verify operational details, and bring your business surface live quickly.' },
-          { icon: Phone, title: 'Partnership support', body: 'Talk through bulk publishing, local growth, and operational setup questions.' },
-          { icon: MapPin, title: 'Coverage requests', body: 'Need a new geography or category lane? We can shape the directory around it.' },
-        ]
-      : productKind === 'editorial'
-        ? [
-            { icon: FileText, title: 'Editorial submissions', body: 'Pitch essays, columns, and long-form ideas that fit the publication.' },
-            { icon: Mail, title: 'Newsletter partnerships', body: 'Coordinate sponsorships, collaborations, and issue-level campaigns.' },
-            { icon: Sparkles, title: 'Contributor support', body: 'Get help with voice, formatting, and publication workflow questions.' },
-          ]
-        : productKind === 'visual'
-          ? [
-              { icon: ImageIcon, title: 'Creator collaborations', body: 'Discuss gallery launches, creator features, and visual campaigns.' },
-              { icon: Sparkles, title: 'Licensing and use', body: 'Reach out about usage rights, commercial requests, and visual partnerships.' },
-              { icon: Mail, title: 'Media kits', body: 'Request creator decks, editorial support, or visual feature placement.' },
-            ]
-          : [
-              { icon: Bookmark, title: 'Collection submissions', body: 'Suggest resources, boards, and links that deserve a place in the library.' },
-              { icon: Mail, title: 'Resource partnerships', body: 'Coordinate curation projects, reference pages, and link programs.' },
-              { icon: Sparkles, title: 'Curator support', body: 'Need help organizing shelves, collections, or profile-connected boards?' },
-            ]
-
   return (
-    <div className={`min-h-screen ${tone.shell}`}>
+    <div className="min-h-screen bg-white text-slate-900">
       <NavbarShell />
-      <main className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-        <section className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-70">Contact {SITE_CONFIG.name}</p>
-            <h1 className="mt-4 text-5xl font-semibold tracking-[-0.05em]">A support page that matches the product, not a generic contact form.</h1>
-            <p className={`mt-5 max-w-2xl text-sm leading-8 ${tone.muted}`}>Tell us what you are trying to publish, fix, or launch. We will route it through the right lane instead of forcing every request into the same support bucket.</p>
-            <div className="mt-8 space-y-4">
-              {lanes.map((lane) => (
-                <div key={lane.title} className={`rounded-[1.6rem] p-5 ${tone.soft}`}>
-                  <lane.icon className="h-5 w-5" />
-                  <h2 className="mt-3 text-xl font-semibold">{lane.title}</h2>
-                  <p className={`mt-2 text-sm leading-7 ${tone.muted}`}>{lane.body}</p>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          <div className={`rounded-[2rem] p-7 ${tone.panel}`}>
-            <h2 className="text-2xl font-semibold">Send a message</h2>
-            <form className="mt-6 grid gap-4">
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Your name" />
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="Email address" />
-              <input className="h-12 rounded-xl border border-current/10 bg-transparent px-4 text-sm" placeholder="What do you need help with?" />
-              <textarea className="min-h-[180px] rounded-2xl border border-current/10 bg-transparent px-4 py-3 text-sm" placeholder="Share the full context so we can respond with the right next step." />
-              <button type="submit" className={`inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-semibold ${tone.action}`}>Send message</button>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#1b2b6b] text-white">
+        <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_20%_20%,#f5b014_0,transparent_40%)]" />
+        <div className="relative mx-auto max-w-7xl px-4 py-20 text-center sm:px-6 lg:px-8">
+          <span className="inline-flex items-center rounded-full border border-white/20 bg-white/5 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em]">
+            Get In Touch
+          </span>
+          <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+            We'd love to <span className="text-[#f5b014]">hear from you</span>.
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/75">
+            Whether you have a question, feedback, or want to work together — our team is just a message away.
+          </p>
+        </div>
+      </section>
+
+      {/* Channels */}
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {channels.map((c) => (
+            <div key={c.label} className="rounded-2xl border border-slate-200 bg-slate-50 p-7 transition-all hover:-translate-y-1 hover:border-[#1b2b6b] hover:shadow-xl">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#1b2b6b] text-white">
+                <c.icon className="h-6 w-6" />
+              </div>
+              <p className="mt-5 text-xs font-bold uppercase tracking-wider text-slate-500">{c.label}</p>
+              <p className="mt-1 text-base font-bold text-[#1b2b6b]">{c.value}</p>
+              <p className="mt-1 text-sm text-slate-600">{c.sub}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Form + Map */}
+      <section className="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-8 sm:p-10">
+            <h2 className="text-3xl font-bold tracking-tight">Send us a message</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Fill in the form and our team will get back to you within 30 minutes.
+            </p>
+            <form className="mt-8 grid gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">First Name</label>
+                  <input className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:border-[#1b2b6b] focus:outline-none" placeholder="Jane" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Last Name</label>
+                  <input className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:border-[#1b2b6b] focus:outline-none" placeholder="Doe" />
+                </div>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Email</label>
+                  <input type="email" className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:border-[#1b2b6b] focus:outline-none" placeholder="you@example.com" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Phone</label>
+                  <input className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:border-[#1b2b6b] focus:outline-none" placeholder="+1 (555) 123-4567" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Subject</label>
+                <select className="mt-2 h-12 w-full rounded-xl border border-slate-200 px-4 text-sm focus:border-[#1b2b6b] focus:outline-none">
+                  <option>General inquiry</option>
+                  <option>Profile review</option>
+                  <option>Partnership</option>
+                  <option>Press & Media</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Message</label>
+                <textarea
+                  rows={5}
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm focus:border-[#1b2b6b] focus:outline-none"
+                  placeholder="Tell us a little about what you need..."
+                />
+              </div>
+              <button
+                type="button"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#f5b014] text-sm font-bold text-[#1b2b6b] hover:bg-[#e0a00f]"
+              >
+                <Send className="h-4 w-4" />
+                Send Message
+              </button>
             </form>
           </div>
-        </section>
-      </main>
+
+          <div className="grid gap-6">
+            <div className="rounded-[2rem] border border-slate-200 bg-[#1b2b6b] p-8 text-white">
+              <Clock className="h-8 w-8 text-[#f5b014]" />
+              <h3 className="mt-4 text-2xl font-bold">Working Hours</h3>
+              <div className="mt-6 space-y-3 text-sm">
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="text-white/70">Monday – Friday</span>
+                  <span className="font-semibold">9:00 AM – 10:00 PM</span>
+                </div>
+                <div className="flex justify-between border-b border-white/10 pb-2">
+                  <span className="text-white/70">Saturday</span>
+                  <span className="font-semibold">10:00 AM – 8:00 PM</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/70">Sunday</span>
+                  <span className="font-semibold">Closed</span>
+                </div>
+              </div>
+            </div>
+            <div className="overflow-hidden rounded-[2rem] border border-slate-200">
+              <img
+                src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80"
+                alt="Our location"
+                className="h-full w-full object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Mini FAQ */}
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <span className="inline-flex items-center rounded-full bg-[#1b2b6b] px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-white">
+              Common Questions
+            </span>
+            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">Before you reach out</h2>
+          </div>
+          <div className="mt-12 space-y-4">
+            {faqs.map((f) => (
+              <details key={f.q} className="group rounded-2xl border border-slate-200 bg-white p-6 open:border-[#1b2b6b]">
+                <summary className="flex cursor-pointer list-none items-center justify-between text-base font-bold">
+                  {f.q}
+                  <span className="text-xl text-[#1b2b6b] group-open:rotate-45 transition-transform">+</span>
+                </summary>
+                <p className="mt-4 text-sm leading-7 text-slate-600">{f.a}</p>
+              </details>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <Link href="/help" className="text-sm font-bold text-[#1b2b6b] hover:text-[#f5b014]">
+              Browse all FAQs →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   )
