@@ -5,11 +5,17 @@ import { NavbarShell } from "@/components/shared/navbar-shell";
 import { ContentImage } from "@/components/shared/content-image";
 import { TaskPostCard } from "@/components/shared/task-post-card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { SchemaJsonLd } from "@/components/seo/schema-jsonld";
 import { buildPostUrl } from "@/lib/task-data";
 import { buildPostMetadata, buildTaskMetadata } from "@/lib/seo";
 import { fetchTaskPostBySlug, fetchTaskPosts } from "@/lib/task-data";
 import { SITE_CONFIG } from "@/lib/site-config";
+import { ShareButton } from "@/components/profile/share-button";
+import { Link2, Award, Shield, MessageSquare, FileText, Star, ExternalLink } from "lucide-react";
 
 export const revalidate = 3;
 
@@ -59,6 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ username:
   }
 }
 
+
 export default async function ProfileDetailPage({ params }: { params: Promise<{ username: string }> }) {
   const resolvedParams = await params;
   const post = await fetchTaskPostBySlug("profile", resolvedParams.username);
@@ -81,6 +88,7 @@ export default async function ProfileDetailPage({ params }: { params: Promise<{ 
   const descriptionHtml = formatRichHtml(description);
   const suggestedArticles = await fetchTaskPosts("article", 6);
   const baseUrl = SITE_CONFIG.baseUrl.replace(/\/$/, "");
+  const profileUrl = `${baseUrl}/profile/${post.slug}`;
   const breadcrumbData = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -101,91 +109,186 @@ export default async function ProfileDetailPage({ params }: { params: Promise<{ 
         "@type": "ListItem",
         position: 3,
         name: brandName,
-        item: `${baseUrl}/profile/${post.slug}`,
+        item: profileUrl,
       },
     ],
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       <NavbarShell />
-      <main className="mx-auto w-full max-w-6xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl px-4 pb-16 pt-6 sm:px-6 lg:px-8">
         <SchemaJsonLd data={breadcrumbData} />
-        <section className="rounded-3xl border border-border/60 bg-white/90 p-8 shadow-sm md:p-12">
-          <div className="grid gap-8 md:grid-cols-[200px_1fr] md:items-start">
-            <div className="flex justify-center md:justify-start">
-              <div className="relative h-36 w-36 overflow-hidden rounded-full border border-border/70 bg-muted">
-                {logoUrl ? (
-                  <ContentImage src={logoUrl} alt={post.title} fill className="object-cover" sizes="144px" intrinsicWidth={144} intrinsicHeight={144} />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-3xl font-semibold text-muted-foreground">
-                    {post.title.slice(0, 1).toUpperCase()}
+        
+        {/* Profile Banner */}
+        <Card className="mb-6 overflow-hidden">
+          <div className="relative h-32 bg-gradient-to-r from-blue-500 to-purple-600">
+            <div className="absolute inset-0 bg-black/20" />
+          </div>
+          <CardContent className="relative px-6 pb-6">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between -mt-16">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-white bg-gray-100 shadow-lg">
+                  {logoUrl ? (
+                    <ContentImage src={logoUrl} alt={post.title} fill className="object-cover" sizes="128px" intrinsicWidth={128} intrinsicHeight={128} />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-4xl font-bold text-gray-400">
+                      {post.title.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="mb-4 sm:mb-0">
+                  <div className="flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-gray-900">{brandName}</h1>
+                    <Badge variant="secondary" className="bg-green-100 text-green-800">
+                      <Shield className="mr-1 h-3 w-3" />
+                      Verified
+                    </Badge>
                   </div>
+                  {domain && (
+                    <p className="text-sm text-gray-600 mt-1">{domain}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <ShareButton url={profileUrl} />
+                {website && (
+                  <Button size="sm" asChild>
+                    <Link href={website} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      Visit Website
+                    </Link>
+                  </Button>
                 )}
               </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-foreground sm:text-4xl">{brandName}</h1>
-              {domain ? (
-                <p className="mt-1 text-sm font-medium text-muted-foreground">{domain}</p>
-              ) : null}
-              <article
-                className="article-content prose prose-slate mt-6 max-w-2xl text-base leading-relaxed prose-p:my-4 prose-a:text-primary prose-a:underline prose-strong:font-semibold"
-                dangerouslySetInnerHTML={{ __html: descriptionHtml }}
-              />
-              {website ? (
-                <div className="mt-8">
-                  <Button asChild size="lg" className="px-7 text-base">
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Left Column - Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Tabs Section */}
+            <Card>
+              <CardContent className="p-6">
+                <Tabs defaultValue="posts" className="w-full">
+                  <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="posts" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Posts
+                    </TabsTrigger>
+                    <TabsTrigger value="comments" className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      Comments
+                    </TabsTrigger>
+                    <TabsTrigger value="replies" className="flex items-center gap-2">
+                      <MessageSquare className="h-4 w-4" />
+                      Replies
+                    </TabsTrigger>
+                    <TabsTrigger value="reviews" className="flex items-center gap-2">
+                      <Star className="h-4 w-4" />
+                      Reviews
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="posts" className="mt-6">
+                    <div className="text-center py-12">
+                      <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No posts published yet</h3>
+                      <p className="text-sm text-gray-500">This profile hasn't published any posts yet.</p>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="comments" className="mt-6">
+                    <div className="text-center py-12">
+                      <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No comments yet</h3>
+                      <p className="text-sm text-gray-500">This profile hasn't commented yet.</p>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="replies" className="mt-6">
+                    <div className="text-center py-12">
+                      <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No replies yet</h3>
+                      <p className="text-sm text-gray-500">This profile hasn't replied yet.</p>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="reviews" className="mt-6">
+                    <div className="text-center py-12">
+                      <Star className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
+                      <p className="text-sm text-gray-500">This profile hasn't reviewed anything yet.</p>
+                    </div>
+                  </TabsContent>
+                </Tabs>
+              </CardContent>
+            </Card>
+
+            {/* About Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>About</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <article
+                  className="prose prose-slate max-w-none text-sm leading-relaxed prose-p:my-3 prose-a:text-primary prose-a:underline prose-strong:font-semibold"
+                  dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div className="space-y-6">
+
+            {/* Links */}
+            {website && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Link2 className="h-4 w-4" />
+                    Links
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" className="w-full justify-start" asChild>
                     <Link href={website} target="_blank" rel="noopener noreferrer">
-                      Visit Official Site
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {domain || 'Official Website'}
                     </Link>
                   </Button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </section>
+                </CardContent>
+              </Card>
+            )}
 
-        {suggestedArticles.length ? (
-          <section className="mt-12">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-foreground">Suggested articles</h2>
-              <Link href="/articles" className="text-sm font-medium text-primary hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {suggestedArticles.slice(0, 3).map((article) => (
-                <TaskPostCard
-                  key={article.id}
-                  post={article}
-                  href={buildPostUrl("article", article.slug)}
-                  compact
-                />
-              ))}
-            </div>
-            <nav className="mt-6 rounded-2xl border border-border bg-card/60 p-4">
-              <p className="text-sm font-semibold text-foreground">Related links</p>
-              <ul className="mt-2 space-y-2 text-sm">
-                {suggestedArticles.slice(0, 3).map((article) => (
-                  <li key={`related-${article.id}`}>
+            {/* Suggested Articles */}
+            {suggestedArticles.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Suggested Articles</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {suggestedArticles.slice(0, 3).map((article) => (
                     <Link
+                      key={article.id}
                       href={buildPostUrl("article", article.slug)}
-                      className="text-primary underline-offset-4 hover:underline"
+                      className="block p-3 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
                     >
-                      {article.title}
+                      <h4 className="text-sm font-medium text-gray-900 line-clamp-2">{article.title}</h4>
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-2">{article.summary}</p>
                     </Link>
-                  </li>
-                ))}
-                <li>
-                  <Link href="/profile" className="text-primary underline-offset-4 hover:underline">
-                    Browse all profiles
+                  ))}
+                  <Link href="/articles" className="text-sm text-primary hover:underline block text-center pt-2">
+                    View all articles
                   </Link>
-                </li>
-              </ul>
-            </nav>
-          </section>
-        ) : null}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
       </main>
       <Footer />
     </div>
