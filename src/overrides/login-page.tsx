@@ -53,16 +53,16 @@ export function LoginPageOverride() {
                 <span className="text-xl font-bold">{SITE_CONFIG.name}</span>
               </Link>
               <h1 className="mt-16 text-4xl font-bold leading-tight">
-                Welcome back to your <span className="text-[#f5b014]">profile</span> workspace.
+                Welcome back to your <span className="text-[#f5b014]">photography</span> workspace.
               </h1>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
-                Sign in to manage your public profile, update your bio, and connect with the community.
+                Sign in to upload new shots, manage your galleries, and stay connected with the photography community.
               </p>
               <div className="mt-12 space-y-4">
                 {[
-                  { icon: ShieldCheck, text: 'Verified identity and secure sessions' },
-                  { icon: Sparkles, text: 'Rich profile layouts and highlights' },
-                  { icon: Users, text: 'Community-first discovery experience' },
+                  { icon: ShieldCheck, text: 'Secure sessions and trusted creator identity' },
+                  { icon: Sparkles, text: 'Curated galleries and visual storytelling tools' },
+                  { icon: Users, text: 'Community-first discovery for photographers' },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
                     <item.icon className="h-5 w-5 text-[#f5b014]" />
@@ -78,9 +78,9 @@ export function LoginPageOverride() {
             <span className="inline-flex items-center rounded-full bg-[#f5b014]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#1b2b6b]">
               Sign In
             </span>
-            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">Access your profile</h2>
+            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">Access your account</h2>
             <p className="mt-3 text-sm text-slate-600">
-              Enter your credentials to sign in. Your session is saved locally on this device.
+              Enter your credentials to continue your photography journey.
             </p>
 
             <form onSubmit={onSubmit} className="mt-8 grid gap-4">
@@ -138,9 +138,9 @@ export function LoginPageOverride() {
             </form>
 
             <p className="mt-8 text-center text-sm text-slate-600">
-              Don't have an account?{' '}
+              New here?{' '}
               <Link href="/register" className="font-bold text-[#1b2b6b] hover:text-[#f5b014]">
-                Create one now
+                Create your account
               </Link>
             </p>
           </div>
