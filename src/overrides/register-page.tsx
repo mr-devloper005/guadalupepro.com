@@ -47,9 +47,9 @@ export function RegisterPageOverride() {
             <span className="inline-flex items-center rounded-full bg-[#f5b014]/20 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-[#1b2b6b]">
               Join Now
             </span>
-            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">Create your profile</h2>
+            <h2 className="mt-5 text-3xl font-bold tracking-tight sm:text-4xl">Create your account</h2>
             <p className="mt-3 text-sm text-slate-600">
-              Join {SITE_CONFIG.name} in seconds. Your account is saved locally on this device.
+              Join {SITE_CONFIG.name} in seconds and start sharing your best photography.
             </p>
 
             <form onSubmit={onSubmit} className="mt-8 grid gap-4">
@@ -104,7 +104,7 @@ export function RegisterPageOverride() {
                 className="mt-2 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#f5b014] text-sm font-bold text-[#1b2b6b] hover:bg-[#e0a00f] disabled:opacity-60"
               >
                 {isLoading ? 'Creating account...' : (<>
-                  Create Profile <ArrowRight className="h-4 w-4" />
+                  Create Account <ArrowRight className="h-4 w-4" />
                 </>)}
               </button>
             </form>
@@ -131,17 +131,17 @@ export function RegisterPageOverride() {
                 <span className="text-xl font-bold">{SITE_CONFIG.name}</span>
               </Link>
               <h1 className="mt-16 text-4xl font-bold leading-tight">
-                Build your profile on the
-                <span className="text-[#f5b014]"> #1 community platform.</span>
+                Build your presence on a
+                <span className="text-[#f5b014]"> photography-first platform.</span>
               </h1>
               <p className="mt-5 max-w-md text-sm leading-7 text-white/75">
-                Get a beautiful public profile, verified badges, and a friendly community of creators and professionals.
+                Publish standout photos, organize your galleries, and grow with a global community of creators.
               </p>
               <div className="mt-12 space-y-4">
                 {[
-                  { icon: Users, text: '32,400+ active members this month' },
-                  { icon: ShieldCheck, text: 'Privacy-focused local sessions' },
-                  { icon: Sparkles, text: 'Modern profile layouts out of the box' },
+                  { icon: Users, text: 'Thousands of active photographers every month' },
+                  { icon: ShieldCheck, text: 'Privacy-focused sessions and secure sign-in' },
+                  { icon: Sparkles, text: 'Modern galleries and curated discovery surfaces' },
                 ].map((item) => (
                   <div key={item.text} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm">
                     <item.icon className="h-5 w-5 text-[#f5b014]" />
