@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, LogOut } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { SITE_CONFIG } from '@/lib/site-config'
 import { useAuth } from '@/lib/auth-context'
 import { cn } from '@/lib/utils'
@@ -13,27 +13,12 @@ export const NAVBAR_OVERRIDE_ENABLED = true
 const NAV_LINKS = [
   { name: 'Home', href: '/' },
   { name: 'About', href: '/about' },
-  { name: 'Profiles', href: '/profile' },
-  { name: 'Blog', href: '/blog' },
-  { name: 'Contact', href: '/contact' },
 ]
 
 export function NavbarOverride() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
-  const profileRef = useRef<HTMLDivElement | null>(null)
   const { isAuthenticated, user, logout } = useAuth()
-
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
-        setProfileOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', onClick)
-    return () => document.removeEventListener('mousedown', onClick)
-  }, [])
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200 bg-white/95 backdrop-blur-xl">
@@ -71,44 +56,12 @@ export function NavbarOverride() {
 
         <div className="flex shrink-0 items-center gap-3">
           {isAuthenticated ? (
-            <div ref={profileRef} className="relative hidden md:block">
-              <button
-                onClick={() => setProfileOpen((v) => !v)}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1b2b6b] text-white hover:bg-[#263b8e]"
-                aria-label="Open profile menu"
-              >
-                {user?.avatar ? (
-                  <img src={user.avatar} alt={user.name} className="h-11 w-11 rounded-full object-cover" />
-                ) : (
-                  <span className="text-sm font-bold uppercase">
-                    {(user?.name || 'U').charAt(0)}
-                  </span>
-                )}
-              </button>
-
-              {profileOpen && (
-                <div className="absolute right-0 mt-3 w-64 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-                  <div className="flex items-center gap-3 border-b border-slate-100 p-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1b2b6b] text-sm font-bold text-white">
-                      {(user?.name || 'U').charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-slate-900">{user?.name}</p>
-                      <p className="truncate text-xs text-slate-500">{user?.email}</p>
-                    </div>
-                  </div>
-                  <div className="p-2">
-                    <button
-                      onClick={() => { setProfileOpen(false); logout() }}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Sign Out
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={logout}
+              className="hidden rounded-full border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:border-slate-400 hover:text-slate-900 md:inline-flex"
+            >
+              Sign Out
+            </button>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Link
